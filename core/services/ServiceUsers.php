@@ -29,6 +29,23 @@ class ServiceUsers {
         return $this->user->save() ? true : false;
     }
 
+    public function confirmRegistrationUser():bool
+    {
+        if ($this->user) {
+            $this->user->status = (string)Users::STATUS_ACTIVE;
+            $this->user->removeResetToken();
+
+            if ($this->user->save()
+                && Yii::$app->getUser()->login($this->user)
+                && $this->user->getService()->sendMailByConfirmUser()
+            ){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function sendMailByCreateUser():bool
     {
         if (!$this->user) {

@@ -177,18 +177,10 @@ class SiteController extends Controller
     {
         if (!empty($token)) {
             /* @var $user \core\models\AuthUsers */
-            $identity = AuthUsers::findByResetToken($token);
+            $user = AuthUsers::findByResetToken($token);
 
-            if ($identity) {
-                $identity->status = Users::STATUS_ACTIVE;
-                $identity->removeResetToken();
-
-                if ($identity->save()
-                    && Yii::$app->getUser()->login($identity)
-                    && $identity->getService()->sendMailByConfirmUser()
-                ) {
-                    return $this->redirect('/site/confirm-registration-successful');
-                }
+            if ($user->getService()->confirmRegistrationUser()) {
+                return $this->redirect('/site/confirm-registration-successful');
             }
         }
 

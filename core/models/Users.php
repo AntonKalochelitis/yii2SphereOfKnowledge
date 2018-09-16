@@ -10,9 +10,9 @@ use yii\db\ActiveRecord;
 
 class Users extends ActiveRecord
 {
-    const STATUS_DELETED = 0;
-    const STATUS_WAIT = 5;
-    const STATUS_ACTIVE = 10;
+    const STATUS_DELETED    = '0';
+    const STATUS_WAIT       = '5';
+    const STATUS_ACTIVE     = '10';
 
     /**
      * {@inheritdoc}
