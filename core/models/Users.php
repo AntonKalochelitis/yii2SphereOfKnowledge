@@ -51,18 +51,19 @@ class Users extends ActiveRecord
     /**
      * Finds user by password reset token
      *
-     * @param string $token password reset token
-     * @return static|null
+     * @param string $token
+     * @param string $status
+     * @return Users|null
      */
-    public static function findByResetToken($token)
+    public static function findByResetToken(string $token, string $status = ''):?Users
     {
-        if (!static::isPasswordResetTokenValid($token)) {
+        if (!static::isResetTokenValid($token)) {
             return null;
         }
 
         return static::findOne([
             'reset_token' => $token,
-            'status' => (string)self::STATUS_WAIT,
+            'status' => ((empty($status))?(string)self::STATUS_WAIT:$status)
         ]);
     }
 
@@ -72,7 +73,7 @@ class Users extends ActiveRecord
      * @param string $token password reset token
      * @return bool
      */
-    public static function isPasswordResetTokenValid($token)
+    public static function isResetTokenValid($token)
     {
         if (empty($token)) {
             return false;

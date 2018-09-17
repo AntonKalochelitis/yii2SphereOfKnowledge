@@ -1,4 +1,6 @@
 <?php
+
+use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
@@ -62,8 +64,9 @@ $fieldOptions2 = [
         </div>
         <!-- /.social-auth-links -->
 
-        <a href="#">I forgot my password</a><br>
-        <a href="register.html" class="text-center">Register a new membership</a>
+        <?= Html::a('I forgot my password', Url::toRoute('site/request-password-reset'), ['class'=>"text-center"]) ?>
+        <br>
+        <?= Html::a('Register a new membership', Url::toRoute('site/signup'), ['class'=>"text-center"]) ?>
 
     </div>
     <!-- /.login-box-body -->

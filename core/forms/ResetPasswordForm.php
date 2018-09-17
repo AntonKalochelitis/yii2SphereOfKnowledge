@@ -12,6 +12,7 @@ use core\models\AuthUsers;
 class ResetPasswordForm extends Model
 {
     public $password;
+    public $password_confirm;
 
     /**
      * @var \core\models\AuthUsers
@@ -31,7 +32,7 @@ class ResetPasswordForm extends Model
         if (empty($token) || !is_string($token)) {
             throw new InvalidArgumentException('Password reset token cannot be blank.');
         }
-        $this->_user = AuthUsers::findByPasswordResetToken($token);
+        $this->_user = AuthUsers::findByResetToken($token, (string)AuthUsers::STATUS_ACTIVE);
         if (!$this->_user) {
             throw new InvalidArgumentException('Wrong password reset token.');
         }
@@ -44,8 +45,11 @@ class ResetPasswordForm extends Model
     public function rules()
     {
         return [
-            ['password', 'required'],
-            ['password', 'string', 'min' => 6],
+            [['password', 'password_confirm'], 'required'],
+            [['password', 'password_confirm'], 'string', 'min' => 6],
+            [['password', 'password_confirm'], 'string', 'max' => 80],
+
+            ['password_confirm', 'compare', 'compareAttribute' => 'password'],
         ];
     }
 
@@ -58,7 +62,7 @@ class ResetPasswordForm extends Model
     {
         $user = $this->_user;
         $user->setPassword($this->password);
-        $user->removePasswordResetToken();
+        $user->removeResetToken();
 
         return $user->save(false);
     }

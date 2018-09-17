@@ -2,6 +2,7 @@
 
 namespace core\forms;
 
+use core\models\Users;
 use Yii;
 use yii\base\Model;
 use core\models\AuthUsers;
@@ -24,11 +25,20 @@ class PasswordResetRequestForm extends Model
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'exist',
-                'targetClass' => '\core\models\User',
-                'filter' => ['status' => User::STATUS_ACTIVE],
+                'targetClass' => '\core\models\Users',
+                'filter' => ['status' => (string)Users::STATUS_ACTIVE],
                 'message' => 'There is no user with this email address.'
             ],
         ];
+    }
+
+    public function getLoadAndValidate():bool
+    {
+        if ($this->load(Yii::$app->request->post()) && $this->validate()) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -38,9 +48,9 @@ class PasswordResetRequestForm extends Model
      */
     public function sendEmail()
     {
-        /* @var $user User */
+        /* @var $user AuthUsers */
         $user = AuthUsers::findOne([
-            'status' => User::STATUS_ACTIVE,
+            'status' => (string)AuthUsers::STATUS_ACTIVE,
             'email' => $this->email,
         ]);
 
@@ -48,8 +58,8 @@ class PasswordResetRequestForm extends Model
             return false;
         }
         
-        if (!AuthUsers::isPasswordResetTokenValid($user->password_reset_token)) {
-            $user->generatePasswordResetToken();
+        if (!AuthUsers::isResetTokenValid($user->reset_token)) {
+            $user->generateResetToken();
             if (!$user->save()) {
                 return false;
             }
