@@ -48,8 +48,10 @@ class ResetPasswordForm extends Model
             [['password', 'password_confirm'], 'required'],
             [['password', 'password_confirm'], 'string', 'min' => 6],
             [['password', 'password_confirm'], 'string', 'max' => 80],
-
+            // TODO: Реализовать через Yii::t('app', 'This field is required')]
             ['password_confirm', 'compare', 'compareAttribute' => 'password'],
+            [['password', 'password_confirm'], 'match', 'pattern' => '#\d.*\d#s', 'message' => 'Пароль должен содержать минимум 2 буквы и 2 цифры.'],
+            [['password', 'password_confirm'], 'match', 'pattern' => '#[a-z].*[a-z]#is', 'message' => 'Пароль должен содержать минимум 2 буквы и 2 цифры.'],
         ];
     }
 

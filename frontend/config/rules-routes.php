@@ -15,5 +15,8 @@ return [
     '/confirm-registration-reject'      => 'site/confirm-registration-reject',
     '/successful-registration'          => 'site/successful-registration',
 
-    '/profile'                  => 'profile/index',
+    '/profile'                  =>  'profile/index',
+    '/profile/update'           =>  'profile/update',
+    '/profile/password-change'  =>  'profile/password-change',
+
 ];

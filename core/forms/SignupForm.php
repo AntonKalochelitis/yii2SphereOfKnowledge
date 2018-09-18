@@ -27,7 +27,7 @@ class SignupForm extends Model
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
-            ['email', 'unique', 'targetClass' => '\core\models\AuthUsers', 'message' => 'This email address has already been taken.'],
+            ['email', 'unique', 'targetClass' => '\core\models\AuthUsers', 'message' => Yii::t('app', 'ERROR_EMAIL_EXISTS')],
 
             // TODO: Реализовать через Yii::t('app', 'This field is required')]
             ['password', 'required'],
@@ -38,8 +38,10 @@ class SignupForm extends Model
             ['password_confirm', 'required'],
             ['password_confirm', 'string', 'min' => 6],
             ['password_confirm', 'string', 'max' => 80, 'message' => 'Максимальное количество 80 символов'],
-
+            // TODO: Реализовать через Yii::t('app', 'This field is required')]
             ['password_confirm', 'compare', 'compareAttribute' => 'password'],
+            [['password', 'password_confirm'], 'match', 'pattern' => '#\d.*\d#s', 'message' => 'Пароль должен содержать минимум 2 буквы и 2 цифры.'],
+            [['password', 'password_confirm'], 'match', 'pattern' => '#[a-z].*[a-z]#is', 'message' => 'Пароль должен содержать минимум 2 буквы и 2 цифры.'],
         ];
     }
 
