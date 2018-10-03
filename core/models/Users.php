@@ -36,26 +36,26 @@ class Users extends ActiveRecord
             [['first_name','last_name','patronymic_name', 'email'], 'trim'],
 
             ['email', 'email'],
-            ['email', 'unique', 'targetClass' => Users::className(), 'filter' => ['<>', 'id', $this->getModel()->id], 'message' => Yii::t('app', 'ERROR_EMAIL_EXISTS')],
+            ['email', 'unique', 'targetClass' => Users::className(), 'filter' => ['<>', 'id', static::getModel()->id], 'message' => Yii::t('app', 'ERROR_EMAIL_EXISTS')],
             ['email', 'string', 'max' => 80],
 
             ['status', 'default', 'value' => (string)self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [(string)self::STATUS_ACTIVE, (string)self::STATUS_WAIT, (string)self::STATUS_DELETED]],
 
-            ['first_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => 'ERROR_FIRST_NAME_EXISTS'],
-            ['last_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => 'ERROR_LAST_NAME_EXISTS'],
-            ['patronymic_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => 'ERROR_PATRONYMIC_NAME_EXISTS'],
+            ['first_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => Yii::t('ProfileUpdate', 'ERROR_FIRST_NAME_EXISTS')],
+            ['last_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => Yii::t('ProfileUpdate', 'ERROR_LAST_NAME_EXISTS')],
+            ['patronymic_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => Yii::t('ProfileUpdate', 'ERROR_PATRONYMIC_NAME_EXISTS')],
         ];
     }
 
     public function attributeLabels():array
     {
         return [
-            'first_name'        => Yii::t('app', 'FIRST_NAME_TITLE'),
-            'last_name'         => Yii::t('app', 'LAST_NAME_TITLE'),
-            'patronymic_name'   => Yii::t('app', 'PATRONYMIC_NAME_TITLE'),
-            'email'             => Yii::t('app', 'EMAIL_TITLE'),
-            'status'            => Yii::t('app', 'STATUS_TITLE'),
+            'first_name'        => Yii::t('ProfileUpdate', 'FIRST_NAME_LABELS'),
+            'last_name'         => Yii::t('ProfileUpdate', 'LAST_NAME_LABELS'),
+            'patronymic_name'   => Yii::t('ProfileUpdate', 'PATRONYMIC_NAME_LABELS'),
+            'email'             => Yii::t('ProfileUpdate', 'EMAIL_LABELS'),
+            'status'            => Yii::t('ProfileUpdate', 'STATUS_LABELS'),
         ];
     }
 

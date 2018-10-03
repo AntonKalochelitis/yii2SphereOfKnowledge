@@ -25,6 +25,22 @@ return [
             // this is the name of the session cookie used for login on the frontend
             'name' => 'advanced-frontend',
         ],
+        'i18n' => [
+            'translations' => [
+                'Profile' => [
+                    'class'     => 'yii\i18n\PhpMessageSource',
+                    'basePath'  => '@frontend/translations',
+                ],
+                'PasswordChange' => [
+                    'class'     => 'yii\i18n\PhpMessageSource',
+                    'basePath'  => '@frontend/translations',
+                ],
+                'ProfileUpdate' => [
+                    'class'     => 'yii\i18n\PhpMessageSource',
+                    'basePath'  => '@frontend/translations',
+                ],
+            ],
+        ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [

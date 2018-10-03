@@ -21,6 +21,7 @@ class MenuLeftWidget extends \yii\bootstrap\Widget
                 ['label' => 'Signup', 'url' => ['site/signup'], 'visible' => Yii::$app->user->isGuest],
                 ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
                 ['label' => 'Menu Site', 'options' => ['class' => 'header']],
+                ['label' => 'Library', 'url' => ['library/index']],
                 ['label' => 'About', 'url' => ['site/about']],
                 ['label' => 'Contact', 'url' => ['site/contact']],
             ],

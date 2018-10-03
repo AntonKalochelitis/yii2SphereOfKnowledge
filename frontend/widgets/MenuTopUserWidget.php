@@ -2,7 +2,9 @@
 
 namespace frontend\widgets;
 
+use Yii;
 use yii\helpers\Html;
+use \yii\helpers\Url;
 
 class MenuTopUserWidget extends \yii\bootstrap\Widget
 {
@@ -19,7 +21,7 @@ class MenuTopUserWidget extends \yii\bootstrap\Widget
         <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <img src="<?= $this->directoryAsset ?>/img/user2-160x160.jpg" class="user-image" alt="User Image"/>
-                <span class="hidden-xs">Alexander Pierce</span>
+                <span class="hidden-xs"><?= Yii::$app->user->identity->first_name . ' ' . Yii::$app->user->identity->last_name ?></span>
             </a>
             <ul class="dropdown-menu">
                 <!-- User image -->
@@ -27,10 +29,8 @@ class MenuTopUserWidget extends \yii\bootstrap\Widget
                     <img src="<?= $this->directoryAsset ?>/img/user2-160x160.jpg" class="img-circle"
                          alt="User Image"/>
 
-                    <p>
-                        Alexander Pierce - Web Developer
-                        <small>Member since Nov. 2012</small>
-                    </p>
+                    <p><?= Yii::$app->user->identity->first_name . ' ' . Yii::$app->user->identity->last_name ?></p>
+                    <p>Web Developer</p>
                 </li>
                 <!-- Menu Body -->
                 <li class="user-body">
@@ -41,7 +41,7 @@ class MenuTopUserWidget extends \yii\bootstrap\Widget
                         <a href="#">Sales</a>
                     </div>
                     <div class="col-xs-4 text-center">
-                        <a href="#">Friends</a>
+                        <a href="#"><?= Html::a('Friends', Url::toRoute('friends/index') );  ?></a>
                     </div>
                 </li>
                 <!-- Menu Footer-->

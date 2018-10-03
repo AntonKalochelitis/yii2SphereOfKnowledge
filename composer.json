@@ -23,7 +23,8 @@
         "yiisoft/yii2-jui": "^2.0",
         "yiisoft/yii2-redis": "^2.0",
         "yii2mod/yii2-rbac": "*",
-        "dmstr/yii2-adminlte-asset": "2.*"
+        "dmstr/yii2-adminlte-asset": "2.*",
+        "dpodium/yii2-widget-upload-crop": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

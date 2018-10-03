@@ -32,12 +32,23 @@ class ProfileUpdateForm extends Model
 
             ['email', 'required'],
             ['email', 'email'],
-            ['email', 'unique', 'targetClass' => Users::className(), 'filter' => ['<>', 'id', $this->_user->id], 'message' => Yii::t('app', 'ERROR_EMAIL_EXISTS')],
+            ['email', 'unique', 'targetClass' => Users::className(), 'filter' => ['<>', 'id', $this->_user->id], 'message' => Yii::t('ProfileUpdate', 'ERROR_EMAIL_EXISTS')],
+            ['email', 'string', 'min' => 4],
             ['email', 'string', 'max' => 80],
 
-            ['first_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => Yii::t('app', 'ERROR_FIRST_NAME_EXISTS')],
-            ['last_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => Yii::t('app', 'ERROR_LAST_NAME_EXISTS')],
-            ['patronymic_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => Yii::t('app', 'ERROR_PATRONYMIC_NAME_EXISTS')],
+            ['first_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => Yii::t('ProfileUpdate', 'ERROR_FIRST_NAME_EXISTS')],
+            ['last_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => Yii::t('ProfileUpdate', 'ERROR_LAST_NAME_EXISTS')],
+            ['patronymic_name', 'match', 'pattern' => '/^[a-zA-Zа-яА-ЯёЁїЇіІЄєҐґуУшШщЩхХъэЭюЮрРтТьы\s]+$/is', 'message' => Yii::t('ProfileUpdate', 'ERROR_PATRONYMIC_NAME_EXISTS')],
+        ];
+    }
+
+    public function attributeLabels():array
+    {
+        return [
+            'first_name' => Yii::t('ProfileUpdate', 'FIRST_NAME_LABELS'),
+            'last_name' => Yii::t('ProfileUpdate', 'LAST_NAME_LABELS'),
+            'patronymic_name' => Yii::t('ProfileUpdate', 'PATRONYMIC_NAME_LABELS'),
+            'email' => Yii::t('ProfileUpdate', 'EMAIL_LABELS'),
         ];
     }
 
