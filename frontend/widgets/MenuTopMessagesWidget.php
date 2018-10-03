@@ -97,7 +97,7 @@ class MenuTopMessagesWidget extends \yii\bootstrap\Widget
                         </li>
                     </ul>
                 </li>
-                <li class="footer"><a href="#">See All Messages</a></li>
+                <li class="footer"><?= Html::a('See All Messages', \yii\helpers\Url::toRoute('messages/messages-show-all-to-user')) ?><a href="#"></a></li>
             </ul>
         </li>
         <?php

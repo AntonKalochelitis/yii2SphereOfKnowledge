@@ -15,13 +15,10 @@ return [
     '/confirm-registration-reject'      => 'site/confirm-registration-reject',
     '/successful-registration'          => 'site/successful-registration',
 
-    '/library'                  =>  'library/index',
-
-    '/friends'                  =>  'friends/index',
-
     '/messages'                 =>  'messages/index',
     '/messages-send-to'         =>  'messages/show-send-to',
     '/messages-all'             =>  'messages/show-all',
+    '/messages-show-all-to-me'  =>  'messages/messages-show-all-to-user',
 
     '/notifications'            =>  'notifications/index',
 
@@ -29,8 +26,7 @@ return [
 
     '/friends'                  =>  'friends/index',
 
-    '/wholesaler'               =>  'wholesaler/index',
-    '/dealer'                   =>  'dealer/index',
+    '/library'                  =>  'library/index',
 
     '/profile'                  =>  'profile/index',
     '/profile/update'           =>  'profile/update',

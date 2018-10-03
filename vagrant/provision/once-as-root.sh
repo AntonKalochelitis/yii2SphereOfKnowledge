@@ -76,3 +76,7 @@ echo "Done!"
 
 info "Install composer"
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+info "Update git settings"
+git config --global user.name "Anton Kalochelitis"
+git config --global user.email fire.anton@gmail.com

@@ -37,10 +37,9 @@ use dmstr\widgets\Alert;
 
 <footer class="main-footer">
     <div class="pull-right hidden-xs">
-        <b>Version</b> 2.0
+        <b>Version</b> 1.0 <?php // TODO: Перенести в глобальные настройки ?>
     </div>
-    <strong>Copyright &copy; 2014-2015 <a href="http://almsaeedstudio.com">Almsaeed Studio</a>.</strong> All rights
-    reserved.
+    Copyright &copy; 2017-<?= date('Y') ?> <strong><?= \yii\helpers\Html::a('W-DEVELOP LLC', 'http://w-develop.com') ?></strong> All rights reserved.
 </footer>
 
 <!-- Control Sidebar -->

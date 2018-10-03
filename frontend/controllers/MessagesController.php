@@ -5,7 +5,7 @@ use Yii;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 
-class LibraryController extends Controller
+class MessagesController extends Controller
 {
     public function behaviors():array
     {
@@ -25,6 +25,13 @@ class LibraryController extends Controller
     public function actionIndex()
     {
         return $this->render('index', [
+//            'model' => AuthUsers::getModel(),
+        ]);
+    }
+
+    public function actionMessagesShowAllToUser()
+    {
+        return $this->render('messages-show-all-to-user', [
 //            'model' => AuthUsers::getModel(),
         ]);
     }
