@@ -40,6 +40,8 @@ apt-get install -y php7.2-bcmath php7.2-bz2 php7.2-cgi php7.2-cli php7.2-common 
 apt-get install -y php-memcached memcached php.xdebug
 
 info "Configure MySQL"
+echo '[mysqld]
+sql_mode=IGNORE_SPACE,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' > /etc/mysql/conf.d/disable_strict_mode.cnf
 sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
 mysql -uroot <<< "CREATE USER 'root'@'%' IDENTIFIED BY ''"
 mysql -uroot <<< "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'"

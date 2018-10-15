@@ -1,13 +1,12 @@
 <?php
-
 namespace frontend\controllers;
 
-use core\forms\PasswordChangeForm;
-use core\forms\ProfileUpdateForm;
-use core\models\AuthUsers;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use core\repositories\Users;
+use core\forms\ProfileUpdateForm;
+use core\forms\PasswordChangeForm;
 
 class ProfileController extends Controller
 {
@@ -29,13 +28,13 @@ class ProfileController extends Controller
     public function actionIndex()
     {
         return $this->render('index', [
-            'model' => AuthUsers::getModel(),
+            'model' => Users::getModel(),
         ]);
     }
 
     public function actionUpdate()
     {
-        $model  = AuthUsers::getModel();
+        $model  = Users::getModel();
         $form   = new ProfileUpdateForm($model);
 
         if (Yii::$app->request->isPost) {
@@ -51,7 +50,7 @@ class ProfileController extends Controller
 
     public function actionPasswordChange()
     {
-        $user   = AuthUsers::getModel();
+        $user   = Users::getModel();
         $model  = new PasswordChangeForm($user);
 
         if ($model->changePassword()) {

@@ -2,10 +2,9 @@
 
 namespace core\forms;
 
-use core\models\Users;
 use Yii;
 use yii\base\Model;
-use core\models\AuthUsers;
+use core\repositories\Users;
 
 /**
  * Signup form
@@ -22,26 +21,22 @@ class SignupForm extends Model
     public function rules()
     {
         return [
-            // TODO: Реализовать через Yii::t('app', 'This field is required')]
             ['email', 'trim'],
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
-            ['email', 'unique', 'targetClass' => '\core\models\AuthUsers', 'message' => Yii::t('app', 'ERROR_EMAIL_EXISTS')],
+            ['email', 'unique', 'targetClass' => '\core\repositories\Users', 'message' => Yii::t('Users', 'ERROR_EMAIL_EXISTS')],
 
-            // TODO: Реализовать через Yii::t('app', 'This field is required')]
             ['password', 'required'],
-            ['password', 'string', 'min' => 6],
-            ['password', 'string', 'max' => 80, 'message' => 'Максимальное количество 80 символов'],
+            ['password', 'string', 'min' => 6, 'message' => Yii::t('Users', 'ERROR_MIN_CHAR_PASSWORD_EXISTS')],
+            ['password', 'string', 'max' => 80, 'message' => Yii::t('Users', 'ERROR_MAX_CHAR_PASSWORD_EXISTS')],
 
-            // TODO: Реализовать через Yii::t('app', 'This field is required')]
             ['password_confirm', 'required'],
-            ['password_confirm', 'string', 'min' => 6],
-            ['password_confirm', 'string', 'max' => 80, 'message' => 'Максимальное количество 80 символов'],
-            // TODO: Реализовать через Yii::t('app', 'This field is required')]
+            ['password_confirm', 'string', 'min' => 6, 'message' => 'ERROR_MIN_CHAR_PASSWORD_CONFIRM_EXISTS'],
+            ['password_confirm', 'string', 'max' => 80, 'message' => 'ERROR_MAX_CHAR_PASSWORD_CONFIRM_EXISTS'],
             ['password_confirm', 'compare', 'compareAttribute' => 'password'],
-            [['password', 'password_confirm'], 'match', 'pattern' => '#\d.*\d#s', 'message' => 'Пароль должен содержать минимум 2 буквы и 2 цифры.'],
-            [['password', 'password_confirm'], 'match', 'pattern' => '#[a-z].*[a-z]#is', 'message' => 'Пароль должен содержать минимум 2 буквы и 2 цифры.'],
+            [['password', 'password_confirm'], 'match', 'pattern' => '#\d.*\d#s', 'message' => Yii::t('Users', 'ERROR_MIN_MAX_2CHAR_2NUM')],
+            [['password', 'password_confirm'], 'match', 'pattern' => '#[a-z].*[a-z]#is', 'message' => Yii::t('Users', 'ERROR_MIN_MAX_2CHAR_2NUM')],
         ];
     }
 
@@ -50,7 +45,7 @@ class SignupForm extends Model
      *
      * @return User|null the saved model or null if saving fails
      */
-    public function getUserByValidateSignup():?AuthUsers
+    public function getUserByValidateSignup():?Users
     {
         $this->load(Yii::$app->request->post());
 
@@ -58,7 +53,7 @@ class SignupForm extends Model
             return null;
         }
         
-        $user = new AuthUsers();
+        $user = new Users();
         $user->email = $this->email;
         $user->status = (string)Users::STATUS_WAIT;
         $user->setPassword($this->password);

@@ -1,10 +1,10 @@
 <?php
-
 namespace core\forms;
 
+use Yii;
 use yii\base\InvalidArgumentException;
 use yii\base\Model;
-use core\models\AuthUsers;
+use core\repositories\Users;
 
 /**
  * Password reset form
@@ -15,7 +15,7 @@ class ResetPasswordForm extends Model
     public $password_confirm;
 
     /**
-     * @var \core\models\AuthUsers
+     * @var \core\repositories\Users
      */
     private $_user;
 
@@ -32,7 +32,11 @@ class ResetPasswordForm extends Model
         if (empty($token) || !is_string($token)) {
             throw new InvalidArgumentException('Password reset token cannot be blank.');
         }
-        $this->_user = AuthUsers::findByResetToken($token, (string)AuthUsers::STATUS_ACTIVE);
+
+        $this->_user = Users::findByResetToken($token, (string)Users::STATUS_ACTIVE);
+        if (empty($this->_user)) {
+            $this->_user = Users::findByResetToken($token, (string)Users::STATUS_WAIT);
+        }
         if (!$this->_user) {
             throw new InvalidArgumentException('Wrong password reset token.');
         }
@@ -46,12 +50,11 @@ class ResetPasswordForm extends Model
     {
         return [
             [['password', 'password_confirm'], 'required'],
-            [['password', 'password_confirm'], 'string', 'min' => 6],
-            [['password', 'password_confirm'], 'string', 'max' => 80],
-            // TODO: Реализовать через Yii::t('app', 'This field is required')]
+            [['password', 'password_confirm'], 'string', 'min' => 6, 'message' => Yii::t('Users', 'ERROR_MIN_CHAR_PASSWORD_CONFIRM_EXISTS')],
+            [['password', 'password_confirm'], 'string', 'max' => 80, 'message' => Yii::t('Users', 'ERROR_MAX_CHAR_PASSWORD_CONFIRM_EXISTS')],
             ['password_confirm', 'compare', 'compareAttribute' => 'password'],
-            [['password', 'password_confirm'], 'match', 'pattern' => '#\d.*\d#s', 'message' => 'Пароль должен содержать минимум 2 буквы и 2 цифры.'],
-            [['password', 'password_confirm'], 'match', 'pattern' => '#[a-z].*[a-z]#is', 'message' => 'Пароль должен содержать минимум 2 буквы и 2 цифры.'],
+            [['password', 'password_confirm'], 'match', 'pattern' => '#\d.*\d#s', 'message' => Yii::t('Users', 'ERROR_MIN_MAX_2CHAR_2NUM')],
+            [['password', 'password_confirm'], 'match', 'pattern' => '#[a-z].*[a-z]#is', 'message' => Yii::t('Users', 'ERROR_MIN_MAX_2CHAR_2NUM')],
         ];
     }
 
@@ -64,7 +67,12 @@ class ResetPasswordForm extends Model
     {
         $user = $this->_user;
         $user->setPassword($this->password);
-        $user->removeResetToken();
+
+        if ($user->status == Users::STATUS_WAIT) {
+            $user->getService()->sendMailByCreateUser();
+        } else {
+            $user->removeResetToken();
+        }
 
         return $user->save(false);
     }

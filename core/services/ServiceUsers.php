@@ -3,12 +3,14 @@
 namespace core\services;
 
 use Yii;
-use core\models\AuthUsers;
-use core\models\Users;
+use core\repositories\Users;
 use frontend\models\SignupForm;
 use yii\helpers\Html;
 
-class ServiceUsers {
+class ServiceUsers
+{
+
+    private $user;
 
     public function __construct(Users $user)
     {
@@ -44,6 +46,17 @@ class ServiceUsers {
         }
 
         return false;
+    }
+
+    public function getListUsersByListArrayId(array $list_users_id):array
+    {
+        $list_return = [];
+        $list_users = $this->user::find()->where(['id' => $list_users_id])->asArray()->all();
+
+        foreach ($list_users as $user) {
+            $list_return[$user['id']] = $user;
+        }
+        return $list_return;
     }
 
     public function sendMailByCreateUser():bool

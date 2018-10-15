@@ -3,8 +3,8 @@
 namespace backend\controllers;
 
 use Yii;
-use core\models\Users;
-use core\models\UsersSearch;
+use core\repositories\Users;
+use core\repositories\UsersSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;

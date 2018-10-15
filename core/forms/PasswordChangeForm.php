@@ -3,7 +3,7 @@
 namespace core\forms;
 
 use Yii;
-use core\models\Users;
+use core\repositories\Users;
 use yii\base\Model;
 
 class PasswordChangeForm extends Model

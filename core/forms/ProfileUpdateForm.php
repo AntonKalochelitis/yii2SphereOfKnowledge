@@ -2,9 +2,9 @@
 
 namespace core\forms;
 
-use core\models\Users;
 use Yii;
 use yii\base\Model;
+use core\repositories\Users;
 
 class ProfileUpdateForm extends Model
 {

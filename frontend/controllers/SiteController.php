@@ -1,8 +1,6 @@
 <?php
 namespace frontend\controllers;
 
-use core\models\AuthUsers;
-use core\models\Users;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
@@ -14,6 +12,7 @@ use core\forms\PasswordResetRequestForm;
 use core\forms\ResetPasswordForm;
 use core\forms\SignupForm;
 use core\forms\ContactForm;
+use core\repositories\Users;
 
 /**
  * Site controller
@@ -78,7 +77,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Logs in a user.
+     * Login in a user.
      *
      * @return mixed
      */
@@ -103,13 +102,15 @@ class SiteController extends Controller
     }
 
     /**
-     * Logs out the current user.
+     * Logout the current user.
      *
      * @return mixed
      */
     public function actionLogout()
     {
-        Yii::$app->user->logout();
+        if (!Yii::$app->user->isGuest) {
+            Yii::$app->user->logout();
+        }
 
         return $this->redirect('/');
     }
@@ -176,8 +177,8 @@ class SiteController extends Controller
     public function actionConfirmRegistration(string $token = '')
     {
         if (!empty($token)) {
-            /* @var $user \core\models\AuthUsers */
-            $user = AuthUsers::findByResetToken($token);
+            /* @var $user \core\repositories\Users */
+            $user = Users::findByResetToken($token);
 
             if ($user->getService()->confirmRegistrationUser()) {
                 return $this->redirect('/site/confirm-registration-successful');
@@ -236,19 +237,19 @@ class SiteController extends Controller
     public function actionResetPassword($token)
     {
         try {
-            $model = new ResetPasswordForm($token);
+            $form = new ResetPasswordForm($token);
         } catch (InvalidArgumentException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
+        if ($form->load(Yii::$app->request->post()) && $form->validate() && $form->resetPassword()) {
             Yii::$app->session->setFlash('success', 'New password saved.');
 
             return $this->goHome();
         }
 
         return $this->render('resetPassword', [
-            'model' => $model,
+            'model' => $form,
         ]);
     }
 }

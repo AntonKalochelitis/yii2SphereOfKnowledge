@@ -4,7 +4,7 @@ use yii\helpers\Html;
 
 
 /* @var $this yii\web\View */
-/* @var $model core\models\Users */
+/* @var $model core\repositories\Users */
 
 $this->title = 'Create Users';
 $this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];

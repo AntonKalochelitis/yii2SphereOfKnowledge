@@ -17,7 +17,7 @@ return [
             'csrfParam' => '_csrf-frontend',
         ],
         'user' => [
-            'identityClass' => 'core\models\AuthUsers',
+            'identityClass' => 'core\repositories\AuthUsers',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
         ],
@@ -27,6 +27,10 @@ return [
         ],
         'i18n' => [
             'translations' => [
+                'Users' => [
+                    'class'     => 'yii\i18n\PhpMessageSource',
+                    'basePath'  => '@frontend/translations',
+                ],
                 'Profile' => [
                     'class'     => 'yii\i18n\PhpMessageSource',
                     'basePath'  => '@frontend/translations',

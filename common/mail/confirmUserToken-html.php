@@ -2,7 +2,7 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $user core\models\Users */
+/* @var $user core\repositories\Users */
 
 ?>
 <div class="password-reset">

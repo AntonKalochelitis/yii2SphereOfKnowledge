@@ -2,6 +2,10 @@
 
 namespace frontend\widgets;
 
+use Yii;
+use yii\helpers\Url;
+use yii\helpers\Html;
+use core\repositories\UsersNotification;
 
 class MenuTopNotificationsWidget extends \yii\bootstrap\Widget
 {
@@ -17,47 +21,36 @@ class MenuTopNotificationsWidget extends \yii\bootstrap\Widget
      */
     public function run():void
     {
+        $modelUsersNotification = new UsersNotification();
+        $count_unread_message   = $modelUsersNotification->getService()->getCountUnreadNotification(Yii::$app->user->identity->id);
+        $list_notification      = $modelUsersNotification->getService()->getListNotificationByUserId(Yii::$app->user->identity->id);
+
+//        print_r($list_notification);exit();
         ?>
         <li class="dropdown notifications-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-bell-o"></i>
-                <span class="label label-warning">10</span>
-            </a>
+            <?= Html::a("<i class=\"fa fa-bell-o\"></i><span class=\"label label-warning\">" . $count_unread_message . "</span>", Url::toRoute('notifications/show-all'), [
+                'class' => "dropdown-toggle",
+                'data-toggle' => "dropdown",
+            ]); ?>
             <ul class="dropdown-menu">
-                <li class="header">You have 10 notifications</li>
+                <li class="header">You have <?= $count_unread_message ?> notifications</li>
                 <li>
                     <!-- inner menu: contains the actual data -->
                     <ul class="menu">
-                        <li>
-                            <a href="#">
-                                <i class="fa fa-users text-aqua"></i> 5 new members joined today
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fa fa-warning text-yellow"></i> Very long description here that may
-                                not fit into the page and may cause design problems
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fa fa-users text-red"></i> 5 new members joined
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="#">
-                                <i class="fa fa-shopping-cart text-green"></i> 25 sales made
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fa fa-user text-red"></i> You changed your username
-                            </a>
-                        </li>
+                        <?php
+                        foreach ($list_notification as $notification) {
+                            ?>
+                            <li>
+                                <a href="#">
+                                    <i class="fa <?= $notification['icon'] ?> <?= $notification['icon_color'] ?>"></i><?= $notification['message'] ?>
+                                </a>
+                            </li>
+                            <?php
+                        }
+                        ?>
                     </ul>
                 </li>
-                <li class="footer"><a href="#">View all</a></li>
+                <li class="footer"><?= Html::a('View all', Url::toRoute('notifications/show-all')) ?></li>
             </ul>
         </li>
         <?php

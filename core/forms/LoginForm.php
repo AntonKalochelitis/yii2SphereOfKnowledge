@@ -4,7 +4,7 @@ namespace core\forms;
 
 use Yii;
 use yii\base\Model;
-use core\models\AuthUsers;
+use core\repositories\AuthUsers;
 
 /**
  * Login form

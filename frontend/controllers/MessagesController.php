@@ -4,6 +4,7 @@ namespace frontend\controllers;
 use Yii;
 use yii\web\Controller;
 use yii\filters\AccessControl;
+use core\repositories\UsersMessage;
 
 class MessagesController extends Controller
 {
@@ -26,6 +27,15 @@ class MessagesController extends Controller
     {
         return $this->render('index', [
 //            'model' => AuthUsers::getModel(),
+        ]);
+    }
+
+    public function actionMessagesAjaxListToUser()
+    {
+        $list_message = (new UsersMessage)->getService()->getListMessagesByUserId(Yii::$app->user->identity->getId());
+//        print_r(json_encode($list_message, JSON_UNESCAPED_UNICODE));
+        return $this->renderPartial('messages-ajax-list-to-user', [
+            'list_message' => $list_message,
         ]);
     }
 

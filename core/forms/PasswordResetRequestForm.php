@@ -2,10 +2,9 @@
 
 namespace core\forms;
 
-use core\models\Users;
 use Yii;
 use yii\base\Model;
-use core\models\AuthUsers;
+use core\repositories\Users;
 
 /**
  * Password reset request form
@@ -24,9 +23,9 @@ class PasswordResetRequestForm extends Model
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'exist',
-                'targetClass' => '\core\models\Users',
-                'filter' => ['status' => (string)Users::STATUS_ACTIVE],
-                'message' => 'There is no user with this email address.'
+                'targetClass' => '\core\repositories\Users',
+                'filter' => ['status' => [(string)Users::STATUS_ACTIVE, (string)Users::STATUS_WAIT]],
+                'message' => Yii::t('Users', 'ERROR_NO_EMAIL_EXISTS')
             ],
         ];
     }
@@ -47,9 +46,9 @@ class PasswordResetRequestForm extends Model
      */
     public function sendEmail()
     {
-        /* @var $user AuthUsers */
-        $user = AuthUsers::findOne([
-            'status' => (string)AuthUsers::STATUS_ACTIVE,
+        /* @var $user Users */
+        $user = Users::findOne([
+            'status' => [(string)Users::STATUS_ACTIVE, (string)Users::STATUS_WAIT],
             'email' => $this->email,
         ]);
 
@@ -57,7 +56,7 @@ class PasswordResetRequestForm extends Model
             return false;
         }
         
-        if (!AuthUsers::isResetTokenValid($user->reset_token)) {
+        if (!Users::isResetTokenValid($user->reset_token)) {
             $user->generateResetToken();
             if (!$user->save()) {
                 return false;

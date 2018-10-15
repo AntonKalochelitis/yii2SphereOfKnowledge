@@ -18,7 +18,7 @@ return [
             'csrfParam' => '_csrf-backend',
         ],
         'user' => [
-            'identityClass' => 'core\models\AuthUsers',
+            'identityClass' => 'core\repositories\AuthUsers',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
