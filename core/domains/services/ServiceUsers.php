@@ -20,7 +20,8 @@ class ServiceUsers
     /**
      * Signs user up.
      *
-     * @return User|null the saved model or null if saving fails
+     * @return bool
+     * @throws \Exception
      */
     public function createUser():bool
     {
@@ -31,6 +32,9 @@ class ServiceUsers
         return $this->user->save() ? true : false;
     }
 
+    /**
+     * @return bool
+     */
     public function confirmRegistrationUser():bool
     {
         if ($this->user) {
@@ -48,6 +52,11 @@ class ServiceUsers
         return false;
     }
 
+    /**
+     * @param array $list_users_id
+     *
+     * @return array
+     */
     public function getListUsersByListArrayId(array $list_users_id):array
     {
         $list_return = [];
@@ -59,6 +68,9 @@ class ServiceUsers
         return $list_return;
     }
 
+    /**
+     * @return bool
+     */
     public function sendMailByCreateUser():bool
     {
         if (!$this->user) {
@@ -77,6 +89,9 @@ class ServiceUsers
             ->send();
     }
 
+    /**
+     * @return bool
+     */
     public function sendMailByConfirmUser():bool
     {
         if (!$this->user) {
