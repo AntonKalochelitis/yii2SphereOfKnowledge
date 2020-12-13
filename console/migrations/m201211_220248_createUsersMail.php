@@ -19,9 +19,9 @@ class m201211_220248_createUsersMail extends Migration
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%'.$this->table.'}}', [
+        $this->createTable('{{%' . $this->table . '}}', [
             'userMailId' => $this->primaryKey(),
-            'userId' => $this->integer(11)->Null(),
+            'userId' => $this->integer(11)->notNull(),
             'identifier' => $this->string(80)->Null(),
             'description' => $this->text()->notNull(),
             'token' => $this->string(120)->unique(),
@@ -30,8 +30,8 @@ class m201211_220248_createUsersMail extends Migration
         ], $tableOptions);
 
         $this->addForeignKey(
-            '{{%fk-'.$this->table.'-'.'users'.'-userId}}',
-            '{{%'.$this->table.'}}',
+            '{{%fk-' . $this->table . '-' . 'users' . '-userId}}',
+            '{{%' . $this->table . '}}',
             'userId',
             '{{%users}}',
             'userId',
@@ -40,22 +40,22 @@ class m201211_220248_createUsersMail extends Migration
         );
 
         if ($this->db->driverName === 'mysql') {
-            $query = "INSERT INTO {{%".$this->table."}}"
-                ." (`userMailId`, `userId`, `identifier`, `description`, `token`, `verification`, `status`)".
+            $query = "INSERT INTO {{%" . $this->table . "}}"
+                . " (`userMailId`, `userId`, `identifier`, `description`, `token`, `verification`, `status`)" .
                 " VALUES"
-                ." (1, 1, 'developing.w@gmail.com', '', NULL, 1, 1);";
+                . " (1, 1, 'developing.w@gmail.com', '', NULL, 1, 1);";
             $this->db->createCommand($query)->execute();
         }
 
         $this->createIndex(
-            '{{%index-'.$this->table.'-verification}}',
-            '{{%'.$this->table.'}}',
+            '{{%index-' . $this->table . '-verification}}',
+            '{{%' . $this->table . '}}',
             ['verification']
         );
 
         $this->createIndex(
-            '{{%index-'.$this->table.'-status}}',
-            '{{%'.$this->table.'}}',
+            '{{%index-' . $this->table . '-status}}',
+            '{{%' . $this->table . '}}',
             ['status']
         );
     }
@@ -65,7 +65,7 @@ class m201211_220248_createUsersMail extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%'.$this->table.'}}');
+        $this->dropTable('{{%' . $this->table . '}}');
 
         parent::safeDown();
     }

@@ -2,14 +2,14 @@
 
 namespace core\forms;
 
-use Yii;
-use yii\base\Model;
-use core\repositories\AuthUsers;
+use core\auth\AuthUsers;
+use core\domains\services\ServiceUsers;
+use core\domains\services\ServiceUsersMail;
 
 /**
  * Login form
  */
-class LoginForm extends Model
+class LoginForm extends \yii\base\Model
 {
     public $username;
     public $password;
@@ -55,11 +55,12 @@ class LoginForm extends Model
      */
     public function login()
     {
-        if ($this->load(Yii::$app->request->post()) && $this->validate()) {
-            $user = AuthUsers::findByEmail($this->username);
-            return Yii::$app->getUser()->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
+        if ($this->load(\Yii::$app->request->post()) && $this->validate()) {
+            $user = ServiceUsers::getUsersByIdentifier($this->username);
+
+            return \Yii::$app->getUser()->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
         }
-        
+
         return false;
     }
 }

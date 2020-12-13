@@ -1,11 +1,9 @@
 <?php
 
-namespace core\repositories;
+namespace core\domains\repositories;
 
 /**
  * Class UsersNotification
- *
- *
  *
  * @package core\repositories
  */

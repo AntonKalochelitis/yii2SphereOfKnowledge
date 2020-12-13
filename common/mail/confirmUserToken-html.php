@@ -2,9 +2,10 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $user core\repositories\Users */
+/* @var $user \core\domains\repositories\Users */
+/* @var $userMail \core\domains\repositories\UsersMail */
 
 ?>
 <div class="password-reset">
-    <p>Confirm <?= Html::encode($user->email) ?>,</p>
+    <p>Confirm <?= Html::encode($userMail->identifier) ?>,</p>
 </div>

@@ -1,48 +1,58 @@
 <?php
+
 namespace frontend\controllers;
 
-use Yii;
-use yii\base\InvalidArgumentException;
-use yii\web\BadRequestHttpException;
-use yii\web\Controller;
+use core\domains\repositories\UsersMail;
+use core\domains\services\ServiceUsersMail;
+use core\helpers\DebugHelper;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\base\InvalidArgumentException;
+use yii\helpers\Url;
+use yii\web\BadRequestHttpException;
+use core\auth\AuthUsers;
+use core\domains\repositories\Users;
 use core\forms\LoginForm;
 use core\forms\PasswordResetRequestForm;
 use core\forms\ResetPasswordForm;
-use core\forms\SignupForm;
 use core\forms\ContactForm;
-use core\repositories\Users;
+use core\domains\services\ServiceUsers;
+use frontend\forms\SignUpForm;
 
 /**
- * Site controller
+ * Class SiteController
+ * @package frontend\controllers
  */
-class SiteController extends Controller
+class SiteController extends \yii\web\Controller
 {
     /**
      * {@inheritdoc}
      */
-    public function behaviors():array
+    public function behaviors(): array
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['signup'],
+                        // Не авторизованные пользователи
+                        'actions' => [
+                            'index', 'sign-up', 'sign-in', 'contact', 'about', 'confirm-registration',
+                            'confirm-registration-successful', 'confirm-registration-reject', 'successful-registration',
+                        ],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        // Авторизованные пользователи
+                        'actions' => ['index', 'sign-out'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -53,7 +63,7 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function actions():array
+    public function actions(): array
     {
         return [
             'error' => [
@@ -81,22 +91,18 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionLogin()
+    public function actionSignIn()
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->redirect('site/login');
-        }
-
         $form = new LoginForm();
 
-        if (Yii::$app->request->isPost) {
+        if (\Yii::$app->request->isPost) {
             if ($form->login()) {
                 return $this->redirect('/');
             }
         }
 
         $form->password = '';
-        return $this->render('login', [
+        return $this->render('sign-in', [
             'model' => $form,
         ]);
     }
@@ -106,10 +112,10 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionLogout()
+    public function actionSignOut()
     {
-        if (!Yii::$app->user->isGuest) {
-            Yii::$app->user->logout();
+        if (!\Yii::$app->user->isGuest) {
+            \Yii::$app->user->logout();
         }
 
         return $this->redirect('/');
@@ -123,11 +129,11 @@ class SiteController extends Controller
     public function actionContact()
     {
         $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
+        if ($model->load(\Yii::$app->request->post()) && $model->validate()) {
+            if ($model->sendEmail(\Yii::$app->params['adminEmail'])) {
+                \Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
             } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending your message.');
+                \Yii::$app->session->setFlash('error', 'There was an error sending your message.');
             }
 
             return $this->refresh();
@@ -151,53 +157,82 @@ class SiteController extends Controller
     /**
      * Signs user up.
      *
-     * @return mixed
+     * @return string
+     * @throws \Exception
      */
-    public function actionSignup()
+    public function actionSignUp()
     {
-        $form = new SignupForm();
+        $form = new SignUpForm();
 
-        if (Yii::$app->request->isPost) {
-            $user = $form->getUserByValidateSignup();
+        if (\Yii::$app->request->isPost) {
+            if ($form->getUserByValidateSignUp()) {
+                $user = ServiceUsers::createUser($form);
+                ServiceUsers::sendMailByCreateUser($user);
 
-            if (
-                !empty($user)
-                && $user->getService()->createUser()
-                && $user->getService()->sendMailByCreateUser()
-            ) {
-                $this->redirect('site/registration-successful');
+                $this->redirect(Url::toRoute('site/confirm-registration-successful'));
             }
         }
 
-        return $this->render('signup', [
+        return $this->render('sign-up', [
             'model' => $form,
         ]);
     }
 
+    /**
+     * @param string $token
+     * @return \yii\web\Response
+     * @throws \Exception
+     */
     public function actionConfirmRegistration(string $token = '')
     {
         if (!empty($token)) {
-            /* @var $user \core\repositories\Users */
-            $user = Users::findByResetToken($token);
+            /* @var $user UsersMail */
+            $userMail = ServiceUsersMail::findByResetMailToken($token);
 
-            if ($user->getService()->confirmRegistrationUser()) {
-                return $this->redirect('/site/confirm-registration-successful');
+            if (
+                !empty($userMail->authUser)
+                && ($userMail->authUser->status == AuthUsers::STATUS_ACTIVE || $userMail->authUser->status == AuthUsers::STATUS_WAIT)
+            ) {
+
+                if (ServiceUsers::confirmRegistrationUser($userMail)) {
+                    if (!ServiceUsers::isResetTokenValid($token)) {
+                        // Чистим токен
+                        if (!empty($userMail->token)) {
+                            $userMail->token = '';
+
+                            if (!$userMail->save()) {
+                                throw new \Exception('No Save UsersMail token');
+                            }
+                        }
+                    }
+
+                    return $this->redirect('/site/confirm-registration-successful');
+                }
             }
         }
 
         $this->redirect('/site/confirm-registration-reject');
     }
 
+    /**
+     * @return string
+     */
     public function actionConfirmRegistrationSuccessful()
     {
         return $this->render('confirm-registration-successful');
     }
 
+    /**
+     * @return string
+     */
     public function actionConfirmRegistrationReject()
     {
         return $this->render('confirm-registration-reject');
     }
 
+    /**
+     * @return string
+     */
     public function actionRegistrationSuccessful()
     {
         return $this->render('registration-successful');
@@ -214,11 +249,11 @@ class SiteController extends Controller
 
         if ($form->getLoadAndValidate()) {
             if ($form->sendEmail()) {
-                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
+                \Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
 
                 return $this->goHome();
             } else {
-                Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for the provided email address.');
+                \Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for the provided email address.');
             }
         }
 
@@ -242,8 +277,8 @@ class SiteController extends Controller
             throw new BadRequestHttpException($e->getMessage());
         }
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate() && $form->resetPassword()) {
-            Yii::$app->session->setFlash('success', 'New password saved.');
+        if ($form->load(\Yii::$app->request->post()) && $form->validate() && $form->resetPassword()) {
+            \Yii::$app->session->setFlash('success', 'New password saved.');
 
             return $this->goHome();
         }

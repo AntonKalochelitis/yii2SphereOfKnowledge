@@ -15,11 +15,14 @@ return [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
+            'enableCookieValidation' => true,
+            'enableCsrfValidation' => true,
         ],
         'user' => [
-            'identityClass' => 'core\repositories\AuthUsers',
+            'identityClass' => 'core\auth\AuthUsers',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
+            'loginUrl' => ['site/sign-in'], // Меняем страницу авторизации по умолчанию
         ],
         'session' => [
             // this is the name of the session cookie used for login on the frontend
@@ -28,20 +31,20 @@ return [
         'i18n' => [
             'translations' => [
                 'Users' => [
-                    'class'     => 'yii\i18n\PhpMessageSource',
-                    'basePath'  => '@frontend/translations',
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@frontend/translations',
                 ],
                 'Profile' => [
-                    'class'     => 'yii\i18n\PhpMessageSource',
-                    'basePath'  => '@frontend/translations',
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@frontend/translations',
                 ],
                 'PasswordChange' => [
-                    'class'     => 'yii\i18n\PhpMessageSource',
-                    'basePath'  => '@frontend/translations',
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@frontend/translations',
                 ],
                 'ProfileUpdate' => [
-                    'class'     => 'yii\i18n\PhpMessageSource',
-                    'basePath'  => '@frontend/translations',
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@frontend/translations',
                 ],
             ],
         ],

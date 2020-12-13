@@ -28,7 +28,9 @@
         "yiisoft/yii2-redis": "^2.0",
         "yii2mod/yii2-rbac": "*",
         "dmstr/yii2-adminlte-asset": "2.*",
-        "dpodium/yii2-widget-upload-crop": "*"
+        "dpodium/yii2-widget-upload-crop": "*",
+
+        "nesbot/carbon": "1.37.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

@@ -8,8 +8,6 @@ namespace core\abstracts\db;
  */
 abstract class AbstractRepository extends \yii\db\ActiveRecord
 {
-    use \DevelopingW\CoreClass\Abstracts\Traits\TraitSetGetForClass;
-
     protected const TABLE_NAME = '';
     protected const DB_NAME = '';
 
