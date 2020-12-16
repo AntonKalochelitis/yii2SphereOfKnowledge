@@ -40,9 +40,9 @@ class LoginForm extends \yii\base\Model
     public function validatePassword($attribute, $params)
     {
         if (!$this->hasErrors()) {
-            $user = AuthUsers::findByEmail($this->username);
+            $authUsers = ServiceUsers::getUsersByIdentifier($this->username);
 
-            if (!$user || !$user->validatePassword($this->password)) {
+            if (!$authUsers || !ServiceUsers::validatePassword($this->password, $authUsers)) {
                 $this->addError($attribute, 'Incorrect username or password.');
             }
         }
@@ -56,9 +56,9 @@ class LoginForm extends \yii\base\Model
     public function login()
     {
         if ($this->load(\Yii::$app->request->post()) && $this->validate()) {
-            $user = ServiceUsers::getUsersByIdentifier($this->username);
+            $authUsers = ServiceUsers::getUsersByIdentifier($this->username);
 
-            return \Yii::$app->getUser()->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
+            return \Yii::$app->getUser()->login($authUsers, $this->rememberMe ? 3600 * 24 * 30 : 0);
         }
 
         return false;

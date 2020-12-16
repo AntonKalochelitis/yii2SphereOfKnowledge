@@ -2,26 +2,38 @@
 
 namespace frontend\widgets;
 
-use Yii;
 use yii\helpers\Html;
-use \yii\helpers\Url;
+use yii\helpers\Url;
+use core\auth\AuthUsers;
 
+/**
+ * Class MenuTopUserWidget
+ * @package frontend\widgets
+ */
 class MenuTopUserWidget extends \yii\bootstrap\Widget
 {
     public $directoryAsset;
 
+    /**
+     *
+     */
     public function init():void
     {
         parent::init();
     }
 
+    /**
+     *
+     */
     public function run():void
     {
+        /** @var AuthUsers $identity */
+        $identity = \Yii::$app->user->identity;
         ?>
         <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <img src="<?= $this->directoryAsset ?>/img/user2-160x160.jpg" class="user-image" alt="User Image"/>
-                <span class="hidden-xs"><?= Yii::$app->user->identity->first_name . ' ' . Yii::$app->user->identity->last_name ?></span>
+                <span class="hidden-xs"><?= $identity->firstName . ' ' . $identity->lastName ?></span>
             </a>
             <ul class="dropdown-menu">
                 <!-- User image -->
@@ -29,7 +41,7 @@ class MenuTopUserWidget extends \yii\bootstrap\Widget
                     <img src="<?= $this->directoryAsset ?>/img/user2-160x160.jpg" class="img-circle"
                          alt="User Image"/>
 
-                    <p><?= Yii::$app->user->identity->first_name . ' ' . Yii::$app->user->identity->last_name ?></p>
+                    <p><?= $identity->firstName . ' ' . $identity->lastName ?></p>
                     <p>Web Developer</p>
                 </li>
                 <!-- Menu Body -->
@@ -59,6 +71,9 @@ class MenuTopUserWidget extends \yii\bootstrap\Widget
         parent::run();
     }
 
+    /**
+     * @return string
+     */
     private function MenuProfile():string
     {
         return Html::a(
@@ -68,11 +83,14 @@ class MenuTopUserWidget extends \yii\bootstrap\Widget
         );
     }
 
+    /**
+     * @return string
+     */
     private function MenuLogout():string
     {
         return Html::a(
             'Sign out',
-            ['/site/logout'],
+            ['/sign-out'],
             ['data-method' => 'post', 'class' => 'btn btn-default btn-flat']
         );
     }

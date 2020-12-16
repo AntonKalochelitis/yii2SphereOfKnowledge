@@ -2,11 +2,9 @@
 
 namespace core\domains\services;
 
-use Carbon\Carbon;
 use core\auth\AuthUsers;
 use core\domains\repositories\Users;
 use core\domains\repositories\UsersMail;
-use core\helpers\DebugHelper;
 use frontend\forms\SignUpForm;
 
 /**
@@ -16,23 +14,40 @@ use frontend\forms\SignUpForm;
 class ServiceUsers
 {
     /**
+     * @param string $password
+     * @param AuthUsers $authUsers
+     * @return bool|null
+     */
+    public static function validatePassword(string $password, AuthUsers $authUsers): ?bool
+    {
+        return \Yii::$app->security->validatePassword($password, $authUsers->passwordHash);
+    }
+
+    /**
      * @param string $identifier
      * @return AuthUsers|null
      */
     public static function getUsersByIdentifier(string $identifier): ?AuthUsers
     {
+        $authUsers = ServiceUsersMail::getUsersByIdentifier($identifier);
+        $authUsers = (!empty($authUsers)) ? $authUsers : ServiceUsersPhone::getUsersByIdentifier($identifier);
 
+        if (!empty($authUsers) && AuthUsers::STATUS_ACTIVE == $authUsers->status) {
+            return $authUsers;
+        }
+
+        return null;
     }
 
     /**
-     * @param $id
+     * @param int $id
      * @param string $status
-     * @return Users|null
+     * @return AuthUsers|null
      */
-    public static function getUserByUserIdAndStatus($id, $status = Users::STATUS_ACTIVE): ?Users
+    public static function getUserByUserIdAndStatus(int $id, $status = Users::STATUS_ACTIVE): ?AuthUsers
     {
-        /** @var Users $authUser */
-        $authUser = Users::find()->where([
+        /** @var AuthUsers $authUser */
+        $authUser = AuthUsers::find()->where([
             'userId' => $id,
             'status' => $status,
         ])->one();
@@ -47,11 +62,11 @@ class ServiceUsers
      * @return Users
      * @throws \yii\base\Exception
      */
-    public static function createUser(SignUpForm $form): Users
+    public static function createUser(SignUpForm $form): AuthUsers
     {
-        $user = new Users();
+        $user = new AuthUsers();
 
-        $user->status = (string)Users::STATUS_WAIT;
+        $user->status = (string)AuthUsers::STATUS_WAIT;
         $user->setPassword($form->password);
         $user->generateAuthKey();
         $user->createdAt = time();
@@ -90,15 +105,16 @@ class ServiceUsers
     public static function confirmRegistrationUser(UsersMail $userMail): bool
     {
         if ($userMail->authUser) {
-            $userMail->authUser->status = (string)Users::STATUS_ACTIVE;
+            $authUser = $userMail->authUser;
+            $authUser->status = (string)Users::STATUS_ACTIVE;
 
             $userMail->removeResetToken();
             $userMail->verification = UsersMail::VERIFICATION_ACTIVE;
 
             if (
-                $userMail->authUser->save() && $userMail->save()
-                && \Yii::$app->getUser()->login($userMail->authUser)
-                && static::sendMailByConfirmUser($userMail->authUser)
+                $authUser->save() && $userMail->save()
+                && \Yii::$app->getUser()->login($authUser)
+                && static::sendMailByConfirmUser($authUser)
             ) {
                 return true;
             }
@@ -115,7 +131,7 @@ class ServiceUsers
     public function getListUsersByListArrayId(array $list_users_id): array
     {
         $list_return = [];
-        $list_users = $this->user::find()->where(['id' => $list_users_id])->asArray()->all();
+        $list_users = AuthUsers::find()->where(['id' => $list_users_id])->asArray()->all();
 
         foreach ($list_users as $user) {
             $list_return[$user['id']] = $user;

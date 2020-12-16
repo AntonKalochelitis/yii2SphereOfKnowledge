@@ -21,9 +21,11 @@ class MenuTopNotificationsWidget extends \yii\bootstrap\Widget
      */
     public function run():void
     {
-        $modelUsersNotification = new UsersNotification();
-        $count_unread_message   = $modelUsersNotification->getService()->getCountUnreadNotification(Yii::$app->user->identity->id);
-        $list_notification      = $modelUsersNotification->getService()->getListNotificationByUserId(Yii::$app->user->identity->id);
+//        $modelUsersNotification = new UsersNotification();
+//        $count_unread_message   = $modelUsersNotification->getService()->getCountUnreadNotification(Yii::$app->user->identity->id);
+//        $list_notification      = $modelUsersNotification->getService()->getListNotificationByUserId(Yii::$app->user->identity->id);
+        $count_unread_message = 0;
+        $list_notification = [];
 
 //        print_r($list_notification);exit();
         ?>

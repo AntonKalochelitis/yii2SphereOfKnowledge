@@ -11,10 +11,10 @@ return [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'queue' => [
+            'class' => \yii\queue\file\Queue::class,
+            'path' => '@console/runtime/queue',
+            'as log' => \yii\queue\LogBehavior::class,
+        ],
     ],
-//    'queue' => [
-//        'class' => \yii\queue\file\Queue::class,
-//        'path' => '@console/runtime/queue',
-//        'as log' => \yii\queue\LogBehavior::class,
-//    ],
 ];

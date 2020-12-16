@@ -2,12 +2,13 @@
 
 namespace frontend\widgets;
 
-use core\repositories\Users;
-use Yii;
-use core\repositories\UsersMessage;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
+/**
+ * Class MenuTopMessagesWidget
+ * @package frontend\widgets
+ */
 class MenuTopMessagesWidget extends \yii\bootstrap\Widget
 {
     public $directoryAsset;
@@ -38,13 +39,15 @@ class MenuTopMessagesWidget extends \yii\bootstrap\Widget
      */
     public function run():void
     {
-        $modelUsersMessage      = new UsersMessage();
-        $count_unread_message   = $modelUsersMessage->getService()->getCountUnreadMessage(Yii::$app->user->identity->id);
-        $list_messages          = $modelUsersMessage->getService()->getListMessagesByUserId(Yii::$app->user->identity->id);
-        $list_users_ids         = $modelUsersMessage->getService()->getListUsersIdsByListMessages($list_messages);
+//        $modelUsersMessage      = new UsersMessage();
+//        $count_unread_message   = $modelUsersMessage->getService()->getCountUnreadMessage(Yii::$app->user->identity->id);
+//        $list_messages          = $modelUsersMessage->getService()->getListMessagesByUserId(Yii::$app->user->identity->id);
+//        $list_users_ids         = $modelUsersMessage->getService()->getListUsersIdsByListMessages($list_messages);
+        $count_unread_message = 0;
+        $list_messages = [];
 
-        $modelUsers             = new Users();
-        $list_users             = $modelUsers->getService()->getListUsersByListArrayId($list_users_ids);
+//        $modelUsers             = new Users();
+//        $list_users             = $modelUsers->getService()->getListUsersByListArrayId($list_users_ids);
         ?>
         <li class="dropdown messages-menu">
             <?= Html::a("<i class=\"fa fa-envelope-o\"></i><span class=\"label label-success\">" . $count_unread_message . "</span>",Url::toRoute('messages/show-all'), [

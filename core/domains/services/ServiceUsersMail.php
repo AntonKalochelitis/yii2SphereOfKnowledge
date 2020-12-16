@@ -12,6 +12,21 @@ use core\domains\repositories\UsersMail;
 class ServiceUsersMail
 {
     /**
+     * @param string $identifier
+     * @return AuthUsers|null
+     */
+    public static function getUsersByIdentifier(string $identifier): ?AuthUsers
+    {
+        /** @var UsersMail $usersMail */
+        $usersMail = UsersMail::find()->where([
+            'identifier' => $identifier
+        ])->one();
+
+        return (!empty($usersMail->authUser))?$usersMail->authUser:null;
+    }
+
+    /**
+     * @param int $userId
      * @return AuthUsers|null
      */
     public static function getAuthUserByUserId(int $userId): ?AuthUsers

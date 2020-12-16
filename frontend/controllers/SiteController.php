@@ -44,7 +44,7 @@ class SiteController extends \yii\web\Controller
                     ],
                     [
                         // Авторизованные пользователи
-                        'actions' => ['index', 'sign-out'],
+                        'actions' => ['index', 'about', 'contact', 'sign-out', 'confirm-registration-successful'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -192,19 +192,19 @@ class SiteController extends \yii\web\Controller
                 !empty($userMail->authUser)
                 && ($userMail->authUser->status == AuthUsers::STATUS_ACTIVE || $userMail->authUser->status == AuthUsers::STATUS_WAIT)
             ) {
+                // Проверяем устарел token
+                if (!ServiceUsers::isResetTokenValid($token)) {
+                    // Чистим токен
+                    if (!empty($userMail->token)) {
+                        $userMail->token = '';
 
-                if (ServiceUsers::confirmRegistrationUser($userMail)) {
-                    if (!ServiceUsers::isResetTokenValid($token)) {
-                        // Чистим токен
-                        if (!empty($userMail->token)) {
-                            $userMail->token = '';
-
-                            if (!$userMail->save()) {
-                                throw new \Exception('No Save UsersMail token');
-                            }
+                        if (!$userMail->save()) {
+                            throw new \Exception('No Save UsersMail token');
                         }
                     }
+                }
 
+                if (ServiceUsers::confirmRegistrationUser($userMail)) {
                     return $this->redirect('/site/confirm-registration-successful');
                 }
             }

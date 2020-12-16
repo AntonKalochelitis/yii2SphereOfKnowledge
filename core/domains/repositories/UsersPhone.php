@@ -2,6 +2,8 @@
 
 namespace core\domains\repositories;
 
+use core\auth\AuthUsers;
+
 /**
  * Class UsersPhone
  *
@@ -12,6 +14,8 @@ namespace core\domains\repositories;
  * @property string $description
  * @property int $verification
  * @property int $status
+ *
+ * @property AuthUsers authUser
  *
  * @package core\repositories
  */
