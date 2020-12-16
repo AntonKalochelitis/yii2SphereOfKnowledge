@@ -170,18 +170,16 @@ class ServiceUsers
 
         try {
             foreach ($user->userMails as $userMail) {
-                if (!empty($userMail->token)) {
-                    \Yii::$app
-                        ->mailer
-                        ->compose(
-                            ['html' => 'confirmUserToken-html', 'text' => 'confirmUserToken-text'],
-                            ['user' => $user, 'userMail' => $userMail]
-                        )
-                        ->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' information center'])
-                        ->setTo($userMail->identifier)
-                        ->setSubject('Registration confirmed on the site ' . \Yii::$app->name)// TODO: Написать коректное письмо
-                        ->send();
-                }
+                \Yii::$app
+                    ->mailer
+                    ->compose(
+                        ['html' => 'confirmUserToken-html', 'text' => 'confirmUserToken-text'],
+                        ['user' => $user, 'userMail' => $userMail]
+                    )
+                    ->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' information center'])
+                    ->setTo($userMail->identifier)
+                    ->setSubject('Registration confirmed on the site ' . \Yii::$app->name)// TODO: Написать коректное письмо
+                    ->send();
             }
         } catch (\Exception $e) {
             \Yii::error(print_r($e, 1));

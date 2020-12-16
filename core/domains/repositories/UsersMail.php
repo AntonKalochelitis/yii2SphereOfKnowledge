@@ -3,6 +3,7 @@
 namespace core\domains\repositories;
 
 use core\auth\AuthUsers;
+use core\domains\services\ServiceUsersMail;
 
 /**
  * Class UsersMail
@@ -52,14 +53,8 @@ class UsersMail extends \core\abstracts\db\AbstractRepository
     /**
      * @return AuthUsers|null
      */
-    public function getAuthUser(): ?AuthUsers
+    public function getAuthUser():?AuthUsers
     {
-        /** @var AuthUsers $authUsers */
-        $authUsers = AuthUsers::find()->where([
-            'userId' => $this->userId
-        ])->one();
-
-        return $authUsers;
+        return ServiceUsersMail::getAuthUserByUserId($this->userId);
     }
-
 }

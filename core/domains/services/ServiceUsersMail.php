@@ -12,6 +12,19 @@ use core\domains\repositories\UsersMail;
 class ServiceUsersMail
 {
     /**
+     * @return AuthUsers|null
+     */
+    public static function getAuthUserByUserId(int $userId): ?AuthUsers
+    {
+        /** @var AuthUsers $authUsers */
+        $authUsers = AuthUsers::find()->where([
+            'userId' => $userId
+        ])->one();
+
+        return $authUsers;
+    }
+
+    /**
      * @param int $userId
      * @return UsersMail[]|null
      */
