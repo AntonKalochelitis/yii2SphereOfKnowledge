@@ -1,13 +1,15 @@
 <?php
+
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $user core\repositories\Users */
+/* @var $authUsers \core\domains\repositories\Users */
+/* @var $userMail \core\domains\repositories\UsersMail */
 
-$resetLink = Yii::$app->urlManager->createAbsoluteUrl(['site/reset-password', 'token' => $user->reset_token]);
+$resetLink = Yii::$app->urlManager->createAbsoluteUrl(['site/reset-password', 'token' => $userMail->token]);
 ?>
 <div class="password-reset">
-    <p>Confirm <?= Html::encode($user->email) ?>,</p>
+    <p>Confirm <?= Html::encode($userMail->token) ?>,</p>
 </div>
 
 <div class="password-url"><?= $resetLink ?></div>

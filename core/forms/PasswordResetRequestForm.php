@@ -2,16 +2,24 @@
 
 namespace core\forms;
 
-use Yii;
-use yii\base\Model;
-use core\repositories\Users;
+use core\domains\repositories\Users;
+use core\domains\repositories\UsersMail;
+use core\domains\services\ServiceUsers;
+use core\domains\services\ServiceUsersMail;
+use core\helpers\ArrayHelper;
 
 /**
  * Password reset request form
+ *
+ * Class PasswordResetRequestForm
+ *
+ * @property string $identifier
+ *
+ * @package core\forms
  */
-class PasswordResetRequestForm extends Model
+class PasswordResetRequestForm extends \yii\base\Model
 {
-    public $email;
+    public $identifier;
 
     /**
      * {@inheritdoc}
@@ -19,20 +27,53 @@ class PasswordResetRequestForm extends Model
     public function rules()
     {
         return [
-            ['email', 'trim'],
-            ['email', 'required'],
-            ['email', 'email'],
-            ['email', 'exist',
-                'targetClass' => '\core\repositories\Users',
-                'filter' => ['status' => [(string)Users::STATUS_ACTIVE, (string)Users::STATUS_WAIT]],
-                'message' => Yii::t('Users', 'ERROR_NO_EMAIL_EXISTS')
-            ],
+            ['identifier', 'trim'],
+            ['identifier', 'required'],
+            ['identifier', 'email'],
+            ['identifier', 'checkEmail']
+//                'targetClass' => '\core\domains\repositories\UsersMail',
+//                'filter' => ['status' => [(string)Users::STATUS_ACTIVE, (string)Users::STATUS_WAIT]],
+//                'message' => \Yii::t('Users', 'ERROR_NO_EMAIL_EXISTS')
+//            ],
         ];
     }
 
-    public function getLoadAndValidate():bool
+    /**
+     * @param $attribute
+     * @param $params
+     */
+    public function checkEmail($attribute, $params)
     {
-        if ($this->load(Yii::$app->request->post()) && $this->validate()) {
+        if (!$this->hasErrors()) {
+            $authUsers = ServiceUsersMail::getAuthUsersByIdentifier($this->$attribute);
+
+            if (
+                !empty($authUsers)
+                && ($authUsers->status == (string)Users::STATUS_ACTIVE || $authUsers->status == (string)Users::STATUS_WAIT)
+            ) {
+                //
+            } else {
+                $this->addError($attribute, \Yii::t('Users', 'ERROR_NO_EMAIL_EXISTS'));
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function attributeLabels()
+    {
+        return [
+            'identifier' => 'Email',
+        ];
+    }
+
+    /**
+     * @return bool
+     */
+    public function getLoadAndValidate(): bool
+    {
+        if ($this->load(\Yii::$app->request->post()) && $this->validate()) {
             return true;
         }
 
@@ -44,34 +85,47 @@ class PasswordResetRequestForm extends Model
      *
      * @return bool whether the email was send
      */
-    public function sendEmail()
+    public function sendEmail():bool
     {
-        /* @var $user Users */
-        $user = Users::findOne([
-            'status' => [(string)Users::STATUS_ACTIVE, (string)Users::STATUS_WAIT],
-            'email' => $this->email,
-        ]);
+        $authUsers = ServiceUsersMail::getAuthUsersByIdentifier($this->identifier);
 
-        if (!$user) {
+        if (!$authUsers) {
             return false;
         }
-        
-        if (!Users::isResetTokenValid($user->reset_token)) {
-            $user->generateResetToken();
-            if (!$user->save()) {
-                return false;
-            }
+
+        if (
+            !empty($authUsers)
+            && ($authUsers->status == (string)Users::STATUS_ACTIVE || $authUsers->status == (string)Users::STATUS_WAIT)
+        ) {
+            //
+        } else {
+            return false;
         }
 
-        return Yii::$app
-            ->mailer
-            ->compose(
-                ['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'],
-                ['user' => $user]
-            )
-            ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name . ' robot'])
-            ->setTo($this->email)
-            ->setSubject('Password reset for ' . Yii::$app->name)
-            ->send();
+        /** @var UsersMail[] $userMails */
+        $userMails = ArrayHelper::index($authUsers->userMails, 'userMailId'); // Отсекаем ассоциативный массив по emails
+        foreach ($userMails as $userMail) {
+            try {
+                if (!ServiceUsers::isResetTokenValid($userMail->token)) {
+                    $userMail->token = ServiceUsers::generateResetToken();
+                    if (!$userMail->save()) {
+                        return false;
+                    }
+                }
+            } catch (\yii\base\Exception $e) {
+                dd($e, 1);
+            }
+
+            return \Yii::$app
+                ->mailer
+                ->compose(
+                    ['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'],
+                    ['authUsers' => $authUsers, 'userMail' => $userMail]
+                )
+                ->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])
+                ->setTo($this->identifier)
+                ->setSubject('Password reset for ' . \Yii::$app->name)
+                ->send();
+        }
     }
 }

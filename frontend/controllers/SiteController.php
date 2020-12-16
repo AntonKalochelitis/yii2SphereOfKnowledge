@@ -38,6 +38,7 @@ class SiteController extends \yii\web\Controller
                         'actions' => [
                             'index', 'sign-up', 'sign-in', 'contact', 'about', 'confirm-registration',
                             'confirm-registration-successful', 'confirm-registration-reject', 'successful-registration',
+                            'request-password-reset', 'reset-password'
                         ],
                         'allow' => true,
                         'roles' => ['?'],
@@ -246,7 +247,7 @@ class SiteController extends \yii\web\Controller
     {
         $form = new PasswordResetRequestForm();
 
-        if ($form->getLoadAndValidate()) {
+        if (\Yii::$app->request->isPost && $form->getLoadAndValidate()) {
             if ($form->sendEmail()) {
                 \Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
 
@@ -276,7 +277,12 @@ class SiteController extends \yii\web\Controller
             throw new BadRequestHttpException($e->getMessage());
         }
 
-        if ($form->load(\Yii::$app->request->post()) && $form->validate() && $form->resetPassword()) {
+        if (
+            \Yii::$app->request->isPost
+            && $form->load(\Yii::$app->request->post())
+            && $form->validate()
+            && $form->resetPassword()
+        ) {
             \Yii::$app->session->setFlash('success', 'New password saved.');
 
             return $this->goHome();

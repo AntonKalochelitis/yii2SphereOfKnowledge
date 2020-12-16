@@ -27,10 +27,10 @@ class ServiceUsers
      * @param string $identifier
      * @return AuthUsers|null
      */
-    public static function getUsersByIdentifier(string $identifier): ?AuthUsers
+    public static function getAuthUsersByIdentifier(string $identifier): ?AuthUsers
     {
-        $authUsers = ServiceUsersMail::getUsersByIdentifier($identifier);
-        $authUsers = (!empty($authUsers)) ? $authUsers : ServiceUsersPhone::getUsersByIdentifier($identifier);
+        $authUsers = ServiceUsersMail::getAuthUsersByIdentifier($identifier);
+        $authUsers = (!empty($authUsers)) ? $authUsers : ServiceUsersPhone::getAuthUsersByIdentifier($identifier);
 
         if (!empty($authUsers) && AuthUsers::STATUS_ACTIVE == $authUsers->status) {
             return $authUsers;

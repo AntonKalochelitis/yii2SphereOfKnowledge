@@ -69,13 +69,16 @@ class Users extends \core\abstracts\db\AbstractRepository
     }
 
     /**
-     * @return UsersMail[]|null
+     * @return array|null
      */
     public function getUserMails(): ?array
     {
         /** @var UsersMail $usersMail */
         $usersMail = ServiceUsersMail::getUsersMailsByUserId($this->userId);
-        $usersMail = ArrayHelper::index($usersMail, 'userMailId');
+        $usersMail =
+            ArrayHelper::index($usersMail, 'userMailId')
+            +
+            ArrayHelper::index($usersMail, 'identifier');
 
         return $usersMail;
     }

@@ -15,7 +15,7 @@ class ServiceUsersMail
      * @param string $identifier
      * @return AuthUsers|null
      */
-    public static function getUsersByIdentifier(string $identifier): ?AuthUsers
+    public static function getAuthUsersByIdentifier(string $identifier): ?AuthUsers
     {
         /** @var UsersMail $usersMail */
         $usersMail = UsersMail::find()->where([
